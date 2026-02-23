@@ -80,4 +80,4 @@ I have extensively customized this platform to move beyond a standard blog, impl
 *Full Stack Developer & Tech Enthusiast*
 
 ---
-© 2024 DevBlog Platform. Built with passion and code.
+© 2026 DevBlog Platform. Built with passion and code.
