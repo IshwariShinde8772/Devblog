@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Add New Post | DevBlog{% endblock %}
+
+{% block content %}
+<div class="container-custom pt-12 pb-24">
+    <div class="flex flex-col lg:flex-row gap-12">
+        <!-- Sidebar -->
+        {% include 'dashboard/sidebar.html' %}
+
+        <!-- Form Area -->
+        <div class="flex-1 max-w-4xl">
+            <div class="mb-10 flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold tracking-tight">Create New Post</h1>
+                    <p class="text-slate-500 text-sm mt-1">Share your knowledge with the world.</p>
+                </div>
+                <!-- AI Assist Button -->
+                <button type="button"
+                    class="btn bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-xl shadow-purple-600/20 hover:scale-105 active:scale-95 group relative overflow-hidden">
+                    <span class="relative z-10 flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-5 h-5 animate-pulse"></i>
+                        AI Assist
+                    </span>
+                    <div
+                        class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                    </div>
+                </button>
+            </div>
+
+            <div class="glass p-8 md:p-12 rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-2xl">
+                <form action="{% url 'add_post' %}" method="POST" enctype="multipart/form-data" class="modern-form">
+                    {% csrf_token %}
+
+                    <div class="grid grid-cols-1 gap-8">
+                        <!-- Custom rendered form fields for premium look -->
+                        <div class="space-y-6">
+                            {{ form | crispy }}
+                        </div>
+                    </div>
+
+                    <div class="mt-12 pt-8 border-t border-slate-100 dark:border-slate-800 flex items-center gap-4">
+                        <button type="submit" class="btn btn-primary px-12 py-4 text-base shadow-xl">
+                            Publish Post
+                            <i data-lucide="send" class="ml-2 w-5 h-5"></i>
+                        </button>
+                        <a href="{% url 'posts' %}" class="btn btn-secondary px-8 py-4">
+                            Save Draft
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Premium Form Styling -->
+<style>
+    .modern-form .form-group {
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .modern-form label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .dark .modern-form label {
+        color: #94a3b8;
+    }
+
+    .modern-form input[type="text"],
+    .modern-form input[type="file"],
+    .modern-form select,
+    .modern-form textarea {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        border-radius: 1.25rem;
+        background-color: #f8fafc;
+        border: 2px solid #f1f5f9;
+        outline: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-size: 1rem;
+    }
+
+    .dark .modern-form input,
+    .dark .modern-form select,
+    .dark .modern-form textarea {
+        background-color: #0f172a;
+        border-color: #1e293b;
+        color: white;
+    }
+
+    .modern-form input:focus,
+    .modern-form select:focus,
+    .modern-form textarea:focus {
+        background-color: white;
+        border-color: #0ea5e9;
+        box-shadow: 0 10px 15px -3px rgba(14, 165, 233, 0.1);
+    }
+
+    .dark .modern-form input:focus {
+        background-color: #020617;
+    }
+
+    .modern-form textarea {
+        min-height: 300px;
+        line-height: 1.6;
+    }
+
+    .modern-form select {
+        appearance: none;
+        cursor: pointer;
+    }
+
+    /* Image preview decoration */
+    .modern-form input[type="file"] {
+        padding: 3rem 2rem;
+        border: 2px dashed #cbd5e1;
+        background-color: transparent;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .dark .modern-form input[type="file"] {
+        border-color: #334155;
+    }
+
+    .modern-form input[type="file"]:hover {
+        border-color: #0ea5e9;
+        bg-primary-50/10;
+    }
+</style>
+
+<!-- Loading State Logic (Visual only as per request) -->
+<script>
+    document.querySelector('form').addEventListener('submit', function () {
+        const btn = this.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.innerHTML = `
+            <svg class="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Publishing...
+        `;
+    });
+</script>
+{% endblock %}

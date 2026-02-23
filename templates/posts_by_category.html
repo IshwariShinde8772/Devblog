@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Category: {{ category }} | DevBlog{% endblock %}
+
+{% block content %}
+<div class="pt-16 pb-24">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="max-w-3xl mb-16 animate-slide-up">
+      <div class="flex items-center gap-2 text-primary-600 font-bold text-xs uppercase tracking-widest mb-4">
+        <i data-lucide="tag" class="w-4 h-4"></i>
+        Category Archive
+      </div>
+      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+        {{ category }}
+      </h1>
+      <p class="text-slate-500 text-lg">
+        Discover all the latest stories and insights filed under the <span
+          class="text-slate-900 dark:text-white font-semibold">{{ category }}</span> category.
+      </p>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+      {% if posts %}
+      {% for post in posts %}
+      <article
+        class="group bg-white dark:bg-slate-900/50 rounded-[32px] border border-slate-100 dark:border-slate-800 p-6 transition-all duration-300 hover:shadow-2xl hover:shadow-primary-600/5 hover:border-primary-500/30 flex flex-col h-full animate-fade-in">
+        <div class="relative rounded-2xl overflow-hidden aspect-video mb-6">
+          <img src="{{ post.featured_image.url }}" alt="{{ post.title }}"
+            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+          <div
+            class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+            <span class="text-white text-xs font-bold uppercase tracking-widest">Read Article</span>
+          </div>
+        </div>
+
+        <div class="flex-1 flex flex-col">
+          <div class="flex items-center gap-2 mb-4">
+            <span
+              class="text-[10px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-md bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400">
+              {{ category }}
+            </span>
+            <span class="text-slate-300 dark:text-slate-700">•</span>
+            <span class="text-xs text-slate-500">{{ post.created_at|date:"M d, Y" }}</span>
+          </div>
+
+          <h3 class="text-xl font-bold mb-4 group-hover:text-primary-600 transition-colors line-clamp-2 leading-tight">
+            <a href="{% url 'blogs' post.slug %}">
+              {{ post.title }}
+            </a>
+          </h3>
+
+          <p class="text-slate-500 text-sm line-clamp-2 mb-6 leading-relaxed">
+            {{ post.short_description }}
+          </p>
+
+          <div class="mt-auto pt-6 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div
+                class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+                <i data-lucide="user" class="w-4 h-4"></i>
+              </div>
+              <span class="text-xs font-bold">{{ post.author }}</span>
+            </div>
+            <span class="text-xs text-slate-400">{{ post.blog_body|wordcount|divisibleby:200|add:1 }} min read</span>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+      {% else %}
+      <div class="col-span-full py-20 text-center">
+        <div
+          class="w-20 h-20 bg-slate-50 dark:bg-slate-900/50 rounded-full flex items-center justify-center text-slate-300 mx-auto mb-6">
+          <i data-lucide="newspaper" class="w-10 h-10"></i>
+        </div>
+        <h2 class="text-2xl font-bold mb-2">No posts yet</h2>
+        <p class="text-slate-500">We haven't published anything in this category yet. Check back soon!</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

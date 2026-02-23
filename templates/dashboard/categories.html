@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Categories | DevBlog{% endblock %}
+
+{% block content %}
+<div class="container-custom pt-12 pb-24">
+  <div class="flex flex-col lg:flex-row gap-12">
+    <!-- Sidebar -->
+    {% include 'dashboard/sidebar.html' %}
+
+    <!-- Content Area -->
+    <div class="flex-1 space-y-8 animate-fade-in">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-bold tracking-tight">Blog Categories</h1>
+          <p class="text-slate-500 text-sm mt-1">Organize your content into meaningful sections.</p>
+        </div>
+        <a href="{% url 'add_category' %}" class="btn btn-primary shadow-lg shadow-primary-600/20">
+          <i data-lucide="plus" class="mr-2 w-5 h-5"></i>
+          New Category
+        </a>
+      </div>
+
+      <!-- Table Container -->
+      <div class="glass rounded-[32px] border border-slate-100 dark:border-slate-800 overflow-hidden shadow-xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead>
+              <tr class="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">#</th>
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Category Name</th>
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Post Count</th>
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Last Modified</th>
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+              {% for cat in categories %}
+              <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-400">
+                  {{ forloop.counter }}
+                </td>
+                <td class="px-6 py-4">
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-600">
+                      <i data-lucide="folder" class="w-5 h-5"></i>
+                    </div>
+                    <span
+                      class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary-600 transition-colors">
+                      {{ cat.category_name }}
+                    </span>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <!-- Placeholder post count since it might not be in context directly as a count field, 
+                                         but we can show it if available or just a static pill for now -->
+                  <span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 text-xs font-bold">
+                    {{ cat.blog_set.count|default:"0" }} Posts
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                  {{ cat.updated_at|date:"M d, Y" }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <div class="flex justify-end gap-2">
+                    <a href="{% url 'edit_category' cat.id %}"
+                      class="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-primary-600 hover:text-white transition-all shadow-sm">
+                      <i data-lucide="edit-3" class="w-4 h-4"></i>
+                    </a>
+                    <a href="{% url 'delete_category' cat.id %}"
+                      class="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-red-600 hover:text-white transition-all shadow-sm">
+                      <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="5" class="px-6 py-12 text-center text-slate-500 italic">
+                  No categories found. Create one to organize your posts.
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

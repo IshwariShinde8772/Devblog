@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Users | DevBlog{% endblock %}
+
+{% block content %}
+<div class="container-custom pt-12 pb-24">
+  <div class="flex flex-col lg:flex-row gap-12">
+    <!-- Sidebar -->
+    {% include 'dashboard/sidebar.html' %}
+
+    <!-- Content Area -->
+    <div class="flex-1 space-y-8 animate-fade-in">
+      {% if perms.auth.view_user %}
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-bold tracking-tight">System Users</h1>
+          <p class="text-slate-500 text-sm mt-1">Manage team members and their permissions.</p>
+        </div>
+        <a href="{% url 'add_user' %}" class="btn btn-primary shadow-lg shadow-primary-600/20">
+          <i data-lucide="user-plus" class="mr-2 w-5 h-5"></i>
+          Add New User
+        </a>
+      </div>
+
+      <!-- Table Container -->
+      <div class="glass rounded-[32px] border border-slate-100 dark:border-slate-800 overflow-hidden shadow-xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead>
+              <tr class="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">#</th>
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Identity</th>
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Contact</th>
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Roles</th>
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+              {% for user in users %}
+              <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-400">
+                  {{ forloop.counter }}
+                </td>
+                <td class="px-6 py-4">
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500">
+                      <i data-lucide="user" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                      <div class="text-sm font-bold text-slate-900 dark:text-white">{{ user.first_name }} {{
+                        user.last_name }}</div>
+                      <div class="text-xs text-slate-500 font-medium">@{{ user.username }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="text-sm text-slate-600 dark:text-slate-400">{{ user.email }}</div>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="flex items-center justify-center gap-2">
+                    {% if user.is_superuser %}
+                    <span
+                      class="px-2 py-0.5 rounded-md bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 text-[10px] font-bold uppercase tracking-wider border border-purple-100 dark:border-purple-800/50">Admin</span>
+                    {% endif %}
+                    {% if user.is_staff %}
+                    <span
+                      class="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[10px] font-bold uppercase tracking-wider border border-blue-100 dark:border-blue-800/50">Staff</span>
+                    {% endif %}
+                    {% if user.is_active %}
+                    <span
+                      class="px-2 py-0.5 rounded-md bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 text-[10px] font-bold uppercase tracking-wider border border-green-100 dark:border-green-800/50">Active</span>
+                    {% endif %}
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <div class="flex justify-end gap-2">
+                    <a href="{% url 'edit_user' user.id %}"
+                      class="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-primary-600 hover:text-white transition-all shadow-sm">
+                      <i data-lucide="edit-3" class="w-4 h-4"></i>
+                    </a>
+                    <a href="{% url 'delete_user' user.id %}"
+                      class="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-red-600 hover:text-white transition-all shadow-sm">
+                      <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="5" class="px-6 py-12 text-center text-slate-500 italic">
+                  No users found.
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% else %}
+      <div class="glass p-12 text-center rounded-[40px] border border-slate-100 dark:border-slate-800">
+        <div
+          class="w-20 h-20 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center text-red-600 mx-auto mb-6">
+          <i data-lucide="shield-alert" class="w-10 h-10"></i>
+        </div>
+        <h2 class="text-2xl font-bold mb-2">Access Denied</h2>
+        <p class="text-slate-500 mb-8 max-w-sm mx-auto">You do not have the required permissions to view the system
+          users. Please contact your administrator.</p>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+          Back to Dashboard
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

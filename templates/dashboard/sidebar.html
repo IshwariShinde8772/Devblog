@@ -1,0 +1,57 @@
+<div class="lg:w-72 lg:shrink-0">
+    <div class="sticky top-28 space-y-2 glass p-4 rounded-3xl border border-slate-100 dark:border-slate-800">
+        <div class="px-4 py-3 mb-2">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Workspace</h3>
+        </div>
+
+        <nav class="space-y-1">
+            <a href="{% url 'dashboard' %}"
+                class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all group {% if request.path == '/dashboard/' %} bg-primary-600 text-white shadow-lg shadow-primary-600/20 {% else %} text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 {% endif %}">
+                <i data-lucide="layout-dashboard"
+                    class="w-5 h-5 {% if request.path == '/dashboard/' %} text-white {% else %} text-slate-400 group-hover:text-primary-500 {% endif %}"></i>
+                Overview
+            </a>
+
+            {% if perms.auth.view_user %}
+            <a href="{% url 'users' %}"
+                class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all group {% if '/users/' in request.path %} bg-primary-600 text-white shadow-lg shadow-primary-600/20 {% else %} text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 {% endif %}">
+                <i data-lucide="users"
+                    class="w-5 h-5 {% if '/users/' in request.path %} text-white {% else %} text-slate-400 group-hover:text-primary-500 {% endif %}"></i>
+                Users
+            </a>
+            {% endif %}
+
+            <a href="{% url 'categories' %}"
+                class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all group {% if '/categories/' in request.path %} bg-primary-600 text-white shadow-lg shadow-primary-600/20 {% else %} text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 {% endif %}">
+                <i data-lucide="folder-tree"
+                    class="w-5 h-5 {% if '/categories/' in request.path %} text-white {% else %} text-slate-400 group-hover:text-primary-500 {% endif %}"></i>
+                Categories
+            </a>
+
+            <a href="{% url 'posts' %}"
+                class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all group {% if '/posts/' in request.path %} bg-primary-600 text-white shadow-lg shadow-primary-600/20 {% else %} text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 {% endif %}">
+                <i data-lucide="file-text"
+                    class="w-5 h-5 {% if '/posts/' in request.path %} text-white {% else %} text-slate-400 group-hover:text-primary-500 {% endif %}"></i>
+                Posts
+            </a>
+
+            <div class="h-px bg-slate-100 dark:bg-slate-800 my-4 mx-4"></div>
+
+            <a href="{% url 'logout' %}"
+                class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all group">
+                <i data-lucide="log-out" class="w-5 h-5 text-red-400 group-hover:text-red-600"></i>
+                Sign out
+            </a>
+        </nav>
+
+        <div class="mt-8 p-4 bg-slate-900 rounded-2xl relative overflow-hidden">
+            <i data-lucide="rocket" class="absolute -right-2 -bottom-2 w-16 h-16 text-slate-800 -rotate-12"></i>
+            <h4 class="text-xs font-bold text-white uppercase tracking-widest mb-2 relative z-10">Pro Plan</h4>
+            <p class="text-[10px] text-slate-400 mb-3 relative z-10 leading-relaxed">Upgrade for unlimited bandwidth and
+                AI features.</p>
+            <button
+                class="w-full py-2 bg-primary-600 text-white text-[10px] font-bold rounded-lg relative z-10 hover:bg-primary-700 transition-colors">Upgrade
+                Now</button>
+        </div>
+    </div>
+</div>

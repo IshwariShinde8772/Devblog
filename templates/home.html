@@ -1,0 +1,290 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}DevBlog | The Modern Publishing Platform{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative pt-20 pb-16 overflow-hidden">
+  <!-- Background Decor -->
+  <div
+    class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-gradient-to-b from-primary-50/50 dark:from-primary-900/10 to-transparent -z-10">
+  </div>
+  <div class="container-custom relative">
+    <div class="max-w-3xl mx-auto text-center mb-16 animate-slide-up">
+      <h1
+        class="text-5xl md:text-6xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-primary-600 to-indigo-600 dark:from-white dark:via-primary-400 dark:to-indigo-400">
+        Insights for the modern builder.
+      </h1>
+      <p class="text-lg text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
+        Discover the stories, technologies, and people shaping the future of the web. Join a community of thousands of
+        developers.
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="#recent" class="btn btn-primary px-8 py-3 text-base">
+          Explore Articles
+          <i data-lucide="arrow-right" class="ml-2 w-5 h-5"></i>
+        </a>
+        <a href="{% url 'register' %}" class="btn btn-secondary px-8 py-3 text-base">
+          Start Writing
+        </a>
+      </div>
+    </div>
+
+    <!-- Featured Post Hero -->
+    {% for post in featured_posts %}
+    {% if forloop.first %}
+    <a href="{% url 'blogs' post.slug %}"
+      class="group block relative rounded-3xl overflow-hidden glass aspect-video md:aspect-[21/9] shadow-2xl animate-fade-in group transition-all duration-500 hover:-translate-y-2">
+      <img src="{{ post.featured_image.url }}" alt="{{ post.title }}"
+        class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+      <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+      <div class="absolute bottom-0 left-0 p-8 md:p-12 max-w-2xl">
+        <span
+          class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-primary-600 text-white mb-4">
+          Featured Story
+        </span>
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 group-hover:text-primary-300 transition-colors">
+          {{ post.title }}
+        </h2>
+        <p class="text-slate-300 text-lg mb-6 line-clamp-2">
+          {{ post.short_description }}
+        </p>
+        <div class="flex items-center gap-3 text-slate-400">
+          <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
+            <i data-lucide="user" class="w-5 h-5"></i>
+          </div>
+          <span class="font-medium text-white">{{ post.author }}</span>
+          <span class="text-slate-500">•</span>
+          <span>{{ post.created_at|timesince }} ago</span>
+        </div>
+      </div>
+    </a>
+    {% endif %}
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Stats / Trust Section (Premium SaaS feel) -->
+<div class="border-y border-slate-100 dark:border-slate-800 py-12 glass mb-20">
+  <div class="container-custom">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+      <div>
+        <div class="text-3xl font-bold text-slate-900 dark:text-white mb-1">10k+</div>
+        <div class="text-sm text-slate-500 uppercase tracking-widest font-semibold">Active Readers</div>
+      </div>
+      <div>
+        <div class="text-3xl font-bold text-slate-900 dark:text-white mb-1">500+</div>
+        <div class="text-sm text-slate-500 uppercase tracking-widest font-semibold">Curated Posts</div>
+      </div>
+      <div>
+        <div class="text-3xl font-bold text-slate-900 dark:text-white mb-1">12</div>
+        <div class="text-sm text-slate-500 uppercase tracking-widest font-semibold">Topic Areas</div>
+      </div>
+      <div>
+        <div class="text-3xl font-bold text-slate-900 dark:text-white mb-1">24/7</div>
+        <div class="text-sm text-slate-500 uppercase tracking-widest font-semibold">Fresh Content</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Feed -->
+<section id="recent" class="container-custom mb-32">
+  <div class="flex flex-col lg:flex-row gap-16">
+    <!-- Articles Column -->
+    <div class="flex-1">
+      <div class="flex items-center justify-between mb-12">
+        <h2 class="text-3xl font-bold">Latest Articles</h2>
+        <div class="flex gap-2">
+          <button id="grid-view-btn"
+            class="p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 hover:text-primary-600 transition-colors">
+            <i data-lucide="layout-grid" class="w-5 h-5"></i>
+          </button>
+          <button id="list-view-btn"
+            class="p-2 rounded-lg bg-primary-600 text-white shadow-lg shadow-primary-600/20 transition-colors">
+            <i data-lucide="list" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <div id="articles-wrapper" class="space-y-8 transition-all duration-500">
+        {% for post in posts %}
+        <article
+          class="group grid md:grid-cols-5 gap-8 bg-white dark:bg-slate-900/50 p-6 rounded-3xl border border-slate-100 dark:border-slate-800/50 hover:border-primary-500/30 transition-all duration-300 hover:shadow-2xl hover:shadow-primary-600/5">
+          <div class="md:col-span-2 overflow-hidden rounded-2xl aspect-[16/10]">
+            <img src="{{ post.featured_image.url }}" alt="{{ post.title }}"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+          </div>
+          <div class="md:col-span-3 flex flex-col justify-center">
+            <div class="flex items-center gap-3 mb-4">
+              <a href="{% url 'posts_by_category' post.category.id %}"
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-100/50 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400 uppercase tracking-widest hover:bg-primary-600 hover:text-white dark:hover:bg-primary-600 dark:hover:text-white transition-all duration-300">
+                {{ post.category }}
+              </a>
+              <span class="text-slate-300 dark:text-slate-700">•</span>
+              <span class="text-sm text-slate-500">{{ post.created_at|date:"M d, Y" }}</span>
+            </div>
+            <h3
+              class="text-2xl font-bold mb-4 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+              <a href="{% url 'blogs' post.slug %}">{{ post.title }}</a>
+            </h3>
+            <p class="text-slate-600 dark:text-slate-400 line-clamp-2 mb-6 text-base leading-relaxed">
+              {{ post.short_description }}
+            </p>
+            <div class="flex items-center justify-between mt-auto">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                  <i data-lucide="user" class="w-4 h-4"></i>
+                </div>
+                <span class="text-sm font-medium">{{ post.author }}</span>
+              </div>
+              <a href="{% url 'blogs' post.slug %}"
+                class="flex items-center gap-1 text-sm font-bold text-primary-600 group/link">
+                Read More
+                <i data-lucide="chevron-right" class="w-4 h-4 transition-transform group-hover/link:translate-x-1"></i>
+              </a>
+            </div>
+          </div>
+        </article>
+        {% empty %}
+        <div
+          class="text-center py-20 bg-slate-50 dark:bg-slate-900/50 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800">
+          <i data-lucide="newspaper" class="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-4"></i>
+          <h3 class="text-lg font-semibold mb-2">No articles found</h3>
+          <p class="text-slate-500">Try adjusting your search or check back later.</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="w-full lg:w-80 space-y-12">
+      <!-- About Card -->
+      <div class="p-8 rounded-3xl glass shadow-sm border border-slate-100 dark:border-slate-800">
+        <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+          <i data-lucide="info" class="w-5 h-5 text-primary-500"></i>
+          {{ about.about_heading|default:"About DevBlog" }}
+        </h3>
+        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-8">
+          DevBlog is a modern publishing platform where technology meets creativity. We provide deep dives into software
+          architecture, frontend elegance, and the evolving digital landscape, helping developers build more meaningful
+          web experiences.
+        </p>
+
+        <!-- Site Info / Features -->
+        <div class="space-y-4">
+          <div class="flex items-start gap-3">
+            <div
+              class="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-600 shrink-0">
+              <i data-lucide="zap" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h4 class="text-xs font-bold uppercase tracking-wider mb-1">Expert Content</h4>
+              <p class="text-xs text-slate-500">Curated articles from industry veterans and modern builders.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-3">
+            <div
+              class="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 shrink-0">
+              <i data-lucide="users" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h4 class="text-xs font-bold uppercase tracking-wider mb-1">Global Community</h4>
+              <p class="text-xs text-slate-500">Join 10,000+ readers sharing knowledge and growing together.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-3">
+            <div
+              class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 shrink-0">
+              <i data-lucide="shield-check" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h4 class="text-xs font-bold uppercase tracking-wider mb-1">Verified Insights</h4>
+              <p class="text-xs text-slate-500">Every piece of code and architectural pattern is peer-reviewed.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Newsletter Box -->
+      <div class="p-8 rounded-3xl bg-slate-950 text-white relative overflow-hidden group">
+        <div class="absolute top-0 right-0 p-4 opacity-20 group-hover:rotate-12 transition-transform">
+          <i data-lucide="mail-plus" class="w-24 h-24"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-4 relative z-10">Weekly Newsletter</h3>
+        <p class="text-slate-400 text-sm mb-6 relative z-10">Get the best of DevBlog delivered straight to your inbox.
+        </p>
+        <form class="space-y-3 relative z-10">
+          <input type="email" placeholder="you@example.com"
+            class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border-slate-800 text-sm focus:ring-1 focus:ring-primary-500 outline-none">
+          <button type="button" class="w-full btn btn-primary py-2.5 shadow-none">Subscribe</button>
+        </form>
+      </div>
+    </aside>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const gridBtn = document.getElementById('grid-view-btn');
+  const listBtn = document.getElementById('list-view-btn');
+  const wrapper = document.getElementById('articles-wrapper');
+
+  if (gridBtn && listBtn && wrapper) {
+    const articles = wrapper.querySelectorAll('article');
+
+    function setGridView() {
+      wrapper.classList.remove('space-y-8');
+      wrapper.classList.add('grid', 'grid-cols-1', 'md:grid-cols-2', 'gap-8');
+
+      articles.forEach(article => {
+        article.classList.remove('md:grid-cols-5');
+        article.classList.add('flex', 'flex-col');
+        const imgCont = article.querySelector('div:first-child');
+        const textCont = article.querySelector('div:last-child');
+        if (imgCont && textCont) {
+          imgCont.classList.remove('md:col-span-2');
+          textCont.classList.remove('md:col-span-3');
+          imgCont.classList.add('w-full', 'mb-6');
+        }
+      });
+
+      gridBtn.classList.add('bg-primary-600', 'text-white', 'shadow-lg', 'shadow-primary-600/20');
+      gridBtn.classList.remove('bg-white', 'dark:bg-slate-800', 'border', 'border-slate-100', 'dark:border-slate-700');
+
+      listBtn.classList.remove('bg-primary-600', 'text-white', 'shadow-lg', 'shadow-primary-600/20');
+      listBtn.classList.add('bg-white', 'dark:bg-slate-800', 'border', 'border-slate-100', 'dark:border-slate-700');
+    }
+
+    function setListView() {
+      wrapper.classList.add('space-y-8');
+      wrapper.classList.remove('grid', 'grid-cols-1', 'md:grid-cols-2', 'gap-8');
+
+      articles.forEach(article => {
+        article.classList.add('md:grid-cols-5');
+        article.classList.remove('flex', 'flex-col');
+        const imgCont = article.querySelector('div:first-child');
+        const textCont = article.querySelector('div:last-child');
+        if (imgCont && textCont) {
+          imgCont.classList.add('md:col-span-2');
+          textCont.classList.add('md:col-span-3');
+          imgCont.classList.remove('w-full', 'mb-6');
+        }
+      });
+
+      listBtn.classList.add('bg-primary-600', 'text-white', 'shadow-lg', 'shadow-primary-600/20');
+      listBtn.classList.remove('bg-white', 'dark:bg-slate-800', 'border', 'border-slate-100', 'dark:border-slate-700');
+
+      gridBtn.classList.remove('bg-primary-600', 'text-white', 'shadow-lg', 'shadow-primary-600/20');
+      gridBtn.classList.add('bg-white', 'dark:bg-slate-800', 'border', 'border-slate-100', 'dark:border-slate-700');
+    }
+
+    gridBtn.addEventListener('click', setGridView);
+    listBtn.addEventListener('click', setListView);
+  }
+</script>
+{% endblock %}

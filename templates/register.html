@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Account | DevBlog{% endblock %}
+
+{% block content %}
+<div class="min-h-[90vh] flex items-center justify-center px-4 py-20 relative overflow-hidden">
+    <!-- Background Decor -->
+    <div class="absolute top-1/4 right-1/4 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl -z-10 animate-pulse"></div>
+    <div class="absolute bottom-1/4 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl -z-10"></div>
+
+    <div class="w-full max-w-xl animate-slide-up">
+        <div class="glass p-8 md:p-10 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-800/50">
+            <div class="text-center mb-10">
+                <div
+                    class="w-16 h-16 bg-gradient-to-tr from-primary-600 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg mx-auto mb-6">
+                    <i data-lucide="user-plus" class="w-8 h-8"></i>
+                </div>
+                <h1 class="text-3xl font-bold mb-2">Create your account</h1>
+                <p class="text-slate-500 text-sm">Join the next generation of creators</p>
+            </div>
+
+            <form action="{% url 'register' %}" method="POST" class="auth-form flex flex-col gap-2">
+                {% csrf_token %}
+
+                {% if messages %}
+                <div class="animate-fade-in mb-6">
+                    {% for message in messages %}
+                    <div
+                        class="p-4 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm border border-red-100 dark:border-red-800 flex items-center gap-3">
+                        <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="grid grid-cols-1 md:grid-cols-1 gap-x-6">
+                    {{ form | crispy }}
+                </div>
+
+                <div class="flex items-start gap-3 my-6">
+                    <input type="checkbox" id="terms" required
+                        class="mt-1 w-4 h-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500">
+                    <label for="terms" class="text-sm text-slate-500 leading-relaxed">
+                        I agree to the <a href="#" class="text-primary-600 font-semibold underline">Terms of Service</a>
+                        and <a href="#" class="text-primary-600 font-semibold underline">Privacy Policy</a>.
+                    </label>
+                </div>
+
+                <button type="submit" class="w-full btn btn-primary py-4 text-base shadow-xl group">
+                    Create Account
+                    <i data-lucide="sparkles" class="ml-2 w-5 h-5 transition-transform group-hover:rotate-12"></i>
+                </button>
+            </form>
+
+            <div class="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800 text-center">
+                <p class="text-sm text-slate-500">
+                    Already have an account?
+                    <a href="{% url 'login' %}" class="font-bold text-primary-600 hover:text-primary-700">Sign in
+                        instead</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Styling Crispy Forms for Tailwind */
+    .auth-form .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .auth-form label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 0.5rem;
+        margin-left: 0.25rem;
+    }
+
+    .dark .auth-form label {
+        color: #94a3b8;
+    }
+
+    .auth-form input[type="text"],
+    .auth-form input[type="password"],
+    .auth-form input[type="email"],
+    .auth-form textarea {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border-radius: 1rem;
+        background-color: white;
+        border: 1px solid #e2e8f0;
+        outline: none;
+        transition: all 0.2s;
+        font-size: 0.875rem;
+    }
+
+    .dark .auth-form input {
+        background-color: #0f172a;
+        border-color: #1e293b;
+        color: white;
+    }
+
+    .auth-form input:focus {
+        ring: 2px;
+        ring-color: #0ea5e9;
+        border-color: #0ea5e9;
+    }
+
+    .auth-form .invalid-feedback {
+        color: #ef4444;
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+        margin-left: 0.25rem;
+    }
+</style>
+{% endblock %}

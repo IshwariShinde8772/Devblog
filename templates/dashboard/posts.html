@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Posts | DevBlog{% endblock %}
+
+{% block content %}
+<div class="container-custom pt-12 pb-24">
+  <div class="flex flex-col lg:flex-row gap-12">
+    <!-- Sidebar -->
+    {% include 'dashboard/sidebar.html' %}
+
+    <!-- Content Area -->
+    <div class="flex-1 space-y-8 animate-fade-in">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-bold tracking-tight">All Posts</h1>
+          <p class="text-slate-500 text-sm mt-1">Manage, edit, and publish your articles.</p>
+        </div>
+        <a href="{% url 'add_post' %}" class="btn btn-primary shadow-lg shadow-primary-600/20">
+          <i data-lucide="plus" class="mr-2 w-5 h-5"></i>
+          Add New Post
+        </a>
+      </div>
+
+      <!-- Table Container -->
+      <div class="glass rounded-[32px] border border-slate-100 dark:border-slate-800 overflow-hidden shadow-xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead>
+              <tr class="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">#</th>
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Title</th>
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Category</th>
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Status</th>
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Featured
+                </th>
+                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+              {% for post in posts %}
+              <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-400">
+                  {{ forloop.counter }}
+                </td>
+                <td class="px-6 py-4 max-w-xs">
+                  <div
+                    class="text-sm font-bold text-slate-900 dark:text-white truncate group-hover:text-primary-600 transition-colors">
+                    {{ post.title }}
+                  </div>
+                  <div class="text-xs text-slate-500">{{ post.author }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span
+                    class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold">
+                    {{ post.category }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  {% if post.status == 'Published' or post.status == '1' %}
+                  <span
+                    class="flex items-center gap-1.5 text-xs font-bold text-green-600 bg-green-50 dark:bg-green-900/20 px-3 py-1 rounded-full">
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                    Published
+                  </span>
+                  {% else %}
+                  <span
+                    class="flex items-center gap-1.5 text-xs font-bold text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-3 py-1 rounded-full">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                    Draft
+                  </span>
+                  {% endif %}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center">
+                  {% if post.is_featured %}
+                  <div
+                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-900/20 text-amber-600">
+                    <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                  </div>
+                  {% else %}
+                  <div
+                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-300 dark:text-slate-700">
+                    <i data-lucide="star" class="w-4 h-4"></i>
+                  </div>
+                  {% endif %}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <div class="flex justify-end gap-2">
+                    <a href="{% url 'edit_post' post.id %}"
+                      class="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-primary-600 hover:text-white transition-all shadow-sm">
+                      <i data-lucide="edit-3" class="w-4 h-4"></i>
+                    </a>
+                    <a href="{% url 'delete_post' post.id %}"
+                      class="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-red-600 hover:text-white transition-all shadow-sm">
+                      <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="6" class="px-6 py-12 text-center text-slate-500 italic">
+                  No posts found. Start by creating your first article!
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
