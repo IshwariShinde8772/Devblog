@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Category: {{ category }} | DevBlog{% endblock %}
+{% block title %}Category: {{ cat.category_name }} | DevBlog{% endblock %}
 
 {% block content %}
 <div class="pt-16 pb-24">
@@ -13,11 +13,11 @@
         Category Archive
       </div>
       <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
-        {{ category }}
+        {{ cat.category_name }}
       </h1>
       <p class="text-slate-500 text-lg">
         Discover all the latest stories and insights filed under the <span
-          class="text-slate-900 dark:text-white font-semibold">{{ category }}</span> category.
+          class="text-slate-900 dark:text-white font-semibold">{{ cat.category_name }}</span> category.
       </p>
     </div>
 
