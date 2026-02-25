@@ -258,6 +258,67 @@
         </div>
     </footer>
 
+    <!-- Chatbot Widget -->
+    <div id="chatbot-widget" class="fixed bottom-6 right-6 z-40">
+        <!-- Floating Chat Button -->
+        <button id="chat-toggle-btn" 
+            class="w-12 h-12 rounded-full bg-gradient-to-tr from-primary-600 to-indigo-600 text-white shadow-xl shadow-primary-600/30 hover:shadow-primary-600/50 hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center group">
+            <i data-lucide="message-circle" id="chat-icon" class="w-5 h-5"></i>
+            <i data-lucide="x" id="close-icon" class="w-5 h-5 hidden absolute"></i>
+            <span class="absolute -top-2 -right-2 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">1</span>
+        </button>
+
+        <!-- Chat Panel -->
+        <div id="chat-panel" 
+            class="absolute bottom-16 right-0 w-80 h-[500px] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 flex flex-col transform translate-x-[400px] transition-transform duration-300 opacity-0 pointer-events-none">
+            
+            <!-- Chat Header -->
+            <div class="bg-gradient-to-r from-primary-600 to-indigo-600 text-white px-4 py-3 rounded-t-2xl flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm">Blog Assistant</h3>
+                        <p class="text-xs text-white/70">Ask about blogs</p>
+                    </div>
+                </div>
+                <button id="close-chat-btn" class="p-1 hover:bg-white/20 rounded-lg transition-colors">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Chat Messages -->
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-3 space-y-3 bg-slate-50 dark:bg-slate-800/50">
+                <!-- Initial greeting message -->
+                <div class="flex gap-2 animate-slide-up">
+                    <div class="w-7 h-7 rounded-full bg-primary-100 dark:bg-primary-900/30 flex-shrink-0 flex items-center justify-center">
+                        <i data-lucide="bot" class="w-4 h-4 text-primary-600"></i>
+                    </div>
+                    <div class="bg-white dark:bg-slate-700 rounded-lg p-2 max-w-xs">
+                        <p class="text-xs text-slate-700 dark:text-slate-200">
+                            👋 Hi! Ask me about blogs & categories!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="border-t border-slate-100 dark:border-slate-700 p-3 bg-white dark:bg-slate-900">
+                <form id="chat-form" class="flex gap-2">
+                    <input type="text" 
+                        id="chat-input" 
+                        placeholder="Ask..."
+                        class="flex-1 px-3 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-xs dark:text-white dark:placeholder-slate-400">
+                    <button type="submit" 
+                        class="p-1.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script>
         // Lucide Icons
@@ -297,6 +358,141 @@
                 }
             }
         });
+
+        // Chatbot Toggle Logic
+        const chatToggleBtn = document.getElementById('chat-toggle-btn');
+        const chatPanel = document.getElementById('chat-panel');
+        const closeChatBtn = document.getElementById('close-chat-btn');
+        const chatIcon = document.getElementById('chat-icon');
+        const closeIcon = document.getElementById('close-icon');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatMessages = document.getElementById('chat-messages');
+
+        // Toggle chat panel
+        chatToggleBtn.addEventListener('click', () => {
+            chatPanel.classList.toggle('translate-x-[400px]');
+            chatPanel.classList.toggle('opacity-0');
+            chatPanel.classList.toggle('pointer-events-none');
+            chatIcon.classList.toggle('hidden');
+            closeIcon.classList.toggle('hidden');
+        });
+
+        // Close chat panel
+        closeChatBtn.addEventListener('click', () => {
+            chatPanel.classList.add('translate-x-[400px]', 'opacity-0', 'pointer-events-none');
+            chatIcon.classList.remove('hidden');
+            closeIcon.classList.add('hidden');
+        });
+
+        // Send message
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = chatInput.value.trim();
+            
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            chatInput.value = '';
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            try {
+                const response = await fetch('/api/chat/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+
+                if (!response.ok) throw new Error('Failed to get response');
+                
+                const data = await response.json();
+                removeTypingIndicator();
+                addMessage(data.reply, 'bot');
+            } catch (error) {
+                removeTypingIndicator();
+                addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+                console.error('Chat error:', error);
+            }
+        });
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex gap-2 animate-slide-up ${sender === 'user' ? 'justify-end' : ''}`;
+            
+            if (sender === 'user') {
+                messageDiv.innerHTML = `
+                    <div class="bg-primary-600 text-white rounded-lg p-2 max-w-xs text-xs">
+                        ${escapeHtml(text)}
+                    </div>
+                    <div class="w-7 h-7 rounded-full bg-primary-100 dark:bg-primary-900/30 flex-shrink-0 flex items-center justify-center">
+                        <i data-lucide="user" class="w-4 h-4 text-primary-600"></i>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="w-7 h-7 rounded-full bg-primary-100 dark:bg-primary-900/30 flex-shrink-0 flex items-center justify-center">
+                        <i data-lucide="bot" class="w-4 h-4 text-primary-600"></i>
+                    </div>
+                    <div class="bg-white dark:bg-slate-700 rounded-lg p-2 max-w-xs text-xs text-slate-700 dark:text-slate-200">
+                        ${escapeHtml(text)}
+                    </div>
+                `;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            lucide.createIcons();
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typing-indicator';
+            typingDiv.className = 'flex gap-2';
+            typingDiv.innerHTML = `
+                <div class="w-7 h-7 rounded-full bg-primary-100 dark:bg-primary-900/30 flex-shrink-0 flex items-center justify-center">
+                    <i data-lucide="bot" class="w-4 h-4 text-primary-600"></i>
+                </div>
+                <div class="bg-white dark:bg-slate-700 rounded-lg p-2 flex gap-1">
+                    <div class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></div>
+                    <div class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                    <div class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                </div>
+            `;
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) typingIndicator.remove();
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
     </script>
     {% block scripts %}{% endblock %}
 </body>

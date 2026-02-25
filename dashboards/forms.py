@@ -11,9 +11,14 @@ class CategoryForm(forms.ModelForm):
 
 
 class BlogPostForm(forms.ModelForm):
+    title = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'maxlength': '50'})
+    )
+    
     class Meta:
         model = Blog
-        fields = ('title', 'category', 'featured_image', 'short_description', 'blog_body', 'status', 'is_featured')
+        fields = ('title', 'category', 'featured_image', 'short_description', 'blog_body', 'is_featured')
 
 
 class AddUserForm(UserCreationForm):

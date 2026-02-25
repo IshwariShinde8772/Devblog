@@ -24,12 +24,16 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
     path('category/', include('blogs.urls')),
+    path('blogs/<slug:slug>/like/', BlogsView.toggle_like, name='toggle_like'),
     path('blogs/<slug:slug>/', BlogsView.blogs, name='blogs'),
     # Search endpoint
     path('search/', BlogsView.search, name='search'),
     path('register/', views.register, name='register'),
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
+
+    # Chatbot API
+    path('api/chat/', views.chat_api, name='chat_api'),
 
     # Dashboards
     path('dashboard/', include('dashboards.urls')),

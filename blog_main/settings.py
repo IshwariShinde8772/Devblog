@@ -141,3 +141,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR /'media'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+# OpenRouter API Configuration
+OPENROUTER_API_KEY = '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'

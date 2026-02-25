@@ -33,18 +33,106 @@
                 <form action="" method="POST" enctype="multipart/form-data" class="modern-form">
                     {% csrf_token %}
 
+                    <!-- Render title, category, short_description, blog_body fields -->
                     <div class="grid grid-cols-1 gap-8">
-                        <div class="space-y-6">
-                            {{ form | crispy }}
+                        {% for field in form %}
+                            {% if field.name != 'featured_image' and field.name != 'is_featured' %}
+                                <div class="form-group">
+                                    {{ field.label_tag }}
+                                    {{ field }}
+                                    {% if field.errors %}
+                                        <div class="text-red-500 text-sm mt-2">
+                                            {{ field.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+
+                        <!-- Custom Featured Image Field -->
+                        <div class="form-group">
+                            <label for="id_featured_image" class="block text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-4">
+                                <i data-lucide="image" class="w-5 h-5 inline mr-2"></i>Choose Featured Image
+                            </label>
+                            <div class="relative">
+                                <input type="file" 
+                                    id="id_featured_image" 
+                                    name="featured_image"
+                                    accept="image/*"
+                                    class="hidden"
+                                    onchange="previewImage(event)">
+                                
+                                <label for="id_featured_image" 
+                                    class="flex flex-col items-center justify-center w-full h-64 border-3 border-dashed border-slate-300 dark:border-slate-600 rounded-2xl cursor-pointer bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-300 group">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <i data-lucide="cloud-upload" class="w-12 h-12 text-slate-400 group-hover:text-primary-500 transition-colors mb-2"></i>
+                                        <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                            Click to upload or drag and drop
+                                        </p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400">PNG, JPG, GIF (max. 10MB)</p>
+                                    </div>
+                                </label>
+                                
+                                <!-- Current Image Preview -->
+                                {% if post.featured_image %}
+                                <div class="mt-4">
+                                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">Current Image:</p>
+                                    <img src="{{ post.featured_image.url }}" class="w-full rounded-xl max-h-64 object-cover border border-slate-200 dark:border-slate-700" />
+                                </div>
+                                {% endif %}
+                                
+                                <!-- Image Preview -->
+                                <div id="preview-container" class="mt-4 hidden">
+                                    <img id="preview-image" class="w-full rounded-xl max-h-64 object-cover border border-slate-200 dark:border-slate-700" />
+                                    <button type="button" 
+                                        onclick="clearImage()"
+                                        class="mt-3 btn btn-secondary btn-sm">
+                                        <i data-lucide="trash-2" class="w-4 h-4 mr-2"></i>Remove Image
+                                    </button>
+                                </div>
+                            </div>
+                            {% if form.featured_image.errors %}
+                                <div class="text-red-500 text-sm mt-2">
+                                    {{ form.featured_image.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Custom Featured Toggle -->
+                        <div class="form-group">
+                            <label class="block text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-4">
+                                <i data-lucide="star" class="w-5 h-5 inline mr-2"></i>Post Settings
+                            </label>
+                            <div class="flex items-center gap-4 p-6 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-800">
+                                <input type="checkbox" 
+                                    id="id_is_featured"
+                                    name="is_featured"
+                                    class="w-6 h-6 rounded cursor-pointer accent-primary-600"
+                                    {% if form.is_featured.value %}checked{% endif %}>
+                                <label for="id_is_featured" class="flex-1 cursor-pointer">
+                                    <p class="font-semibold text-slate-700 dark:text-slate-200">Feature this post</p>
+                                    <p class="text-sm text-slate-500 dark:text-slate-400">Show this post prominently on the homepage</p>
+                                </label>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mt-12 pt-8 border-t border-slate-100 dark:border-slate-800 flex items-center gap-4">
-                        <button type="submit" class="btn btn-primary px-12 py-4 text-base shadow-xl">
-                            Update Post
-                            <i data-lucide="save" class="ml-2 w-5 h-5"></i>
+                    <!-- Submit Buttons -->
+                    <div class="mt-12 pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center gap-4">
+                        <button type="submit" 
+                            name="publish_post"
+                            class="w-full sm:w-auto btn btn-primary px-12 py-4 text-base shadow-xl group">
+                            <i data-lucide="send" class="w-5 h-5 mr-2 transition-transform group-hover:translate-x-1"></i>
+                            Publish
                         </button>
-                        <a href="{% url 'posts' %}" class="btn btn-secondary px-8 py-4">
+                        <button type="submit"
+                            name="save_draft"
+                            class="w-full sm:w-auto btn btn-secondary px-8 py-4 group">
+                            <i data-lucide="bookmark" class="w-5 h-5 mr-2"></i>
+                            Save Draft
+                        </button>
+                        <a href="{% url 'posts' %}" class="w-full sm:w-auto btn bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-8 py-4 text-center">
+                            <i data-lucide="x" class="w-5 h-5 mr-2"></i>
                             Cancel
                         </a>
                     </div>
@@ -83,6 +171,7 @@
         padding: 1rem 1.25rem;
         border-radius: 1.25rem;
         background-color: #f8fafc;
+        color: black;
         border: 2px solid #f1f5f9;
         outline: none;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -100,12 +189,14 @@
     .modern-form input:focus,
     .modern-form select:focus,
     .modern-form textarea:focus {
-        background-color: white;
+        background-color: white;    
         border-color: #0ea5e9;
         box-shadow: 0 10px 15px -3px rgba(14, 165, 233, 0.1);
     }
 
-    .dark .modern-form input:focus {
+    .dark .modern-form input:focus,
+    .dark .modern-form select:focus,
+    .dark .modern-form textarea:focus {
         background-color: #020617;
     }
 
@@ -113,18 +204,122 @@
         min-height: 300px;
         line-height: 1.6;
     }
+
+    .modern-form select {
+        appearance: none;
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231e293b' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1.25rem center;
+        padding-right: 2.5rem;
+    }
+
+    .dark .modern-form select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.875rem;
+        font-weight: 600;
+        transition: all 0.2s;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px rgba(14, 165, 233, 0.3);
+    }
+
+    .btn-secondary {
+        background-color: #e2e8f0;
+        color: #1e293b;
+    }
+
+    .dark .btn-secondary {
+        background-color: #1e293b;
+        color: #e2e8f0;
+    }
+
+    .btn-secondary:hover {
+        background-color: #cbd5e1;
+    }
+
+    .dark .btn-secondary:hover {
+        background-color: #334155;
+    }
 </style>
 
+<!-- Image Preview & Drag-Drop Logic -->
 <script>
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function() {
+            document.getElementById('preview-image').src = reader.result;
+            document.getElementById('preview-container').classList.remove('hidden');
+        };
+        
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function clearImage() {
+        document.getElementById('id_featured_image').value = '';
+        document.getElementById('preview-container').classList.add('hidden');
+    }
+
+    // Drag and drop functionality
+    const fileInput = document.getElementById('id_featured_image');
+    const dropZone = fileInput.nextElementSibling;
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => {
+            dropZone.classList.add('border-primary-500', 'bg-primary-50');
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => {
+            dropZone.classList.remove('border-primary-500', 'bg-primary-50');
+        });
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        fileInput.files = files;
+        previewImage({ target: { files: files } });
+    });
+
     document.querySelector('form').addEventListener('submit', function () {
         const btn = this.querySelector('button[type="submit"]');
         btn.disabled = true;
         btn.innerHTML = `
-            <svg class="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24">
+            <svg class="animate-spin h-5 w-5 mr-2 text-white" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            Saving...
+            <span>Saving...</span>
         `;
     });
 </script>

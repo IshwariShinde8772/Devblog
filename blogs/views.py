@@ -1,5 +1,6 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.decorators import login_required
 
 from .models import Blog, Category, Comment
 from django.db.models import Q
@@ -44,8 +45,20 @@ def blogs(request, slug):
         'single_blog': single_blog,
         'comments': comments,
         'comment_count': comment_count,
+        'absolute_url': request.build_absolute_uri(),
     }
     return render(request, 'blogs.html', context)
+
+
+@login_required
+def toggle_like(request, slug):
+    blog = get_object_or_404(Blog, slug=slug, status='Published')
+    user = request.user
+    if user in blog.likes.all():
+        blog.likes.remove(user)
+    else:
+        blog.likes.add(user)
+    return redirect('blogs', slug=slug)
 
 def search(request):
     keyword = request.GET.get('keyword')

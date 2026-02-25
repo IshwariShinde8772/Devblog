@@ -10,9 +10,11 @@ from django.contrib.auth.models import User
 
 @login_required(login_url='login')
 def dashboard(request):
-    category_count = Category.objects.all().count()
-    blogs_count = Blog.objects.all().count()
-
+    # Active categories: only categories that have at least one published blog
+    category_count = Category.objects.filter(blog__status='Published').distinct().count()
+    # Total posts: show count for the current user (dashboard is per-user)
+    blogs_count = Blog.objects.filter(author=request.user).count()
+ #KEY-VALUE PAIR fetching form html 
     context = {
         'category_count': category_count,
         'blogs_count': blogs_count,
@@ -72,6 +74,13 @@ def add_post(request):
         if form.is_valid():
             post = form.save(commit=False) # temporarily saving the form
             post.author = request.user
+            
+            # Determine status based on which button was clicked
+            if 'publish_post' in request.POST:
+                post.status = 'Published'
+            else:
+                post.status = 'Draft'
+            
             post.save()
             title = form.cleaned_data['title']
             post.slug = slugify(title) + '-'+str(post.id)
@@ -93,7 +102,15 @@ def edit_post(request, pk):
     if request.method == 'POST':
         form = BlogPostForm(request.POST, request.FILES, instance=post)
         if form.is_valid():
-            post = form.save()
+            post = form.save(commit=False)
+            
+            # Determine status based on which button was clicked
+            if 'publish_post' in request.POST:
+                post.status = 'Published'
+            else:
+                post.status = 'Draft'
+            
+            post.save()
             title = form.cleaned_data['title']
             post.slug = slugify(title) + '-'+str(post.id)
             post.save()
